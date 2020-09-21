@@ -6,6 +6,8 @@ import {CLogo, CInput, CRoundButton} from '../../components';
 import {loadingStart, loadingStop} from '../../context/actions/loader';
 import {Store} from '../../context/store';
 import {RAddUser, RSignUp} from '../../network';
+import {keys, setAsyncStorage} from '../../asyncStorage';
+import {setUniqueValue} from '../../utility/constants';
 const SignUp = ({navigation}) => {
   const {dispatchLoaderAction} = useContext(Store);
   const [credentials, setCredentials] = useState({
@@ -36,19 +38,29 @@ const SignUp = ({navigation}) => {
     } else {
       dispatchLoaderAction(loadingStart());
       RSignUp(email, password)
-        .then(() => {
+        .then((res) => {
+          if (!res.additionalUserInfo) {
+            dispatchLoaderAction(loadingStop());
+            Alert.alert(res);
+            return;
+          }
           let uid = Firebase.auth().currentUser.uid;
-          let profileImg = ' ';
-          RAddUser(uid, name, email, profileImg)
-            .then()
+          let profileImg = '';
+          RAddUser(name, email, uid, profileImg)
+            .then(() => {
+              setAsyncStorage(keys.uuid, uid).then((r) => {});
+              setUniqueValue(uid);
+              dispatchLoaderAction(loadingStop());
+              navigation.replace('Main');
+            })
             .catch((err) => {
               dispatchLoaderAction(loadingStop());
-              console.log(err);
+              Alert.alert(err);
             });
         })
         .catch((err) => {
           dispatchLoaderAction(loadingStop());
-          console.log(err);
+          Alert.alert(err);
         });
     }
   };

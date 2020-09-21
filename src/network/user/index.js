@@ -1,6 +1,6 @@
 import Firebase from '../../firebase/config';
 
-const addUser = async (uid, name, email, profileImg) => {
+const addUser = async (name, email, uid, profileImg) => {
   try {
     return await Firebase.database()
       .ref('users/' + uid)
