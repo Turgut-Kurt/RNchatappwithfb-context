@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
-
+import React, {useContext, useState} from 'react';
+import Firebase from '../../firebase/config';
 import {Text, SafeAreaView, View, StyleSheet, Alert} from 'react-native';
 import {color, globalStyle} from '../../utility';
 import {CLogo, CInput, CRoundButton} from '../../components';
+import {loadingStart, loadingStop} from '../../context/actions/loader';
+import {Store} from '../../context/store';
+import {RAddUser, RSignUp} from '../../network';
 const SignUp = ({navigation}) => {
+  const {dispatchLoaderAction} = useContext(Store);
   const [credentials, setCredentials] = useState({
     name: '',
     email: '',
@@ -30,7 +34,22 @@ const SignUp = ({navigation}) => {
         'Şifre eşleşmesi sağlanamadı.Lütfen şifre alanlarını aynı giriniz.',
       );
     } else {
-      Alert.alert(JSON.stringify(credentials));
+      dispatchLoaderAction(loadingStart());
+      RSignUp(email, password)
+        .then(() => {
+          let uid = Firebase.auth().currentUser.uid;
+          let profileImg = ' ';
+          RAddUser(uid, name, email, profileImg)
+            .then()
+            .catch((err) => {
+              dispatchLoaderAction(loadingStop());
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          dispatchLoaderAction(loadingStop());
+          console.log(err);
+        });
     }
   };
   return (

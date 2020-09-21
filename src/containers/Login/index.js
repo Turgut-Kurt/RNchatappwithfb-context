@@ -2,11 +2,11 @@ import React, {useContext, useState} from 'react';
 
 import {Text, SafeAreaView, View, StyleSheet, Alert} from 'react-native';
 import {color, globalStyle} from '../../utility';
-import {CLogo, CInput, CRoundButton} from '../../components';
+import {CInput, CLogo, CRoundButton} from '../../components';
 import {Store} from '../../context/store';
 import {loadingStart, loadingStop} from '../../context/actions/loader';
 const Login = ({navigation}) => {
-  const {dispatchLoaderAction, mapLoaderState} = useContext(Store);
+  const {dispatchLoaderAction} = useContext(Store);
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',

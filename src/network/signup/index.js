@@ -1,0 +1,14 @@
+import Firebase from '../../firebase/config';
+
+const SignUp = async (email, password) => {
+  try {
+    return await Firebase.auth().createUserWithEmailAndPassword(
+      email,
+      password,
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export default SignUp;
